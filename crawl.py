@@ -192,7 +192,6 @@ class LoginDialog(Toplevel):
         # 网络请求
         print ('init data~')
         for i in range(1,7):# 几个获取数据的阶段，为了测试暂时修改
-            print(i)
             global progress
             global progress_bar
             # 登录过程的某一阶段处理
@@ -208,7 +207,6 @@ class LoginDialog(Toplevel):
                 root.destroy()
             # 阶段处理完成
             progress += 20
-            print(progress)
             root.event_generate("<<EVENT_LOGIN_UPDATE>>")
         print('init data finished')
 
@@ -287,7 +285,6 @@ class LoginDialog(Toplevel):
             req2 = urllib.request.Request(url2,postdata,headers=header2)
             response2 = urllib.request.urlopen(req2, timeout=12)
             content2 = response2.read().decode('utf-8')
-            print(content2)
             print("专业课拉取完毕")
             JsonParse(list_recommend,content2)
 
@@ -324,7 +321,6 @@ class LoginDialog(Toplevel):
             req3 = urllib.request.Request(url3, postdata, headers=header3)
             response3 = urllib.request.urlopen(req3, timeout=12)
             content3= response3.read().decode('utf-8')
-            print(content3)
             print("人文课拉取完毕")
             GJsonParse(list_humanity, content3)
             # print 'update ui list_science generated'
@@ -359,14 +355,10 @@ class LoginDialog(Toplevel):
             req4 = urllib.request.Request(url4, postdata, headers=header4)
             response4 = urllib.request.urlopen(req4, timeout=12)
             content4 = response4.read().decode('utf-8')
-            print(content4)
             print("自然科学与技术课程拉取完毕")
             GJsonParse(list_science, content4)
             # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_SCIENCE_LIST>>")
-
-
-
         if step == 5:
             print("正在进行第五步：拉取经管课程")
 
@@ -398,7 +390,6 @@ class LoginDialog(Toplevel):
             req5 = urllib.request.Request(url5, postdata, headers=header5)
             response5 = urllib.request.urlopen(req5, timeout=12)
             content5 = response5.read().decode('utf-8')
-            print(content5)
             print("经济管理类拉取完毕")
             GJsonParse(list_economics, content5)
             # print 'update ui list_science generated'
@@ -434,7 +425,6 @@ class LoginDialog(Toplevel):
             req6 = urllib.request.Request(url6, postdata, headers=header6)
             response6 = urllib.request.urlopen(req6, timeout=12)
             content6 = response6.read().decode('utf-8')
-            print(content6)
             print("体育课拉取完毕")
             JsonParse(list_sports, content6)
             # print 'update ui list_science generated'
@@ -488,7 +478,6 @@ def GJsonParse(datalist, StrJson):
     print("正在进行通选课Json数据的解析")
     jsonObject = json.loads(StrJson)
     totalCount = jsonObject['totalCount']
-    print(totalCount)
     for i in range(0, int(totalCount)):
         classData={}
         if((jsonObject['dataList'][i]['isChoose']) is None):
@@ -549,51 +538,53 @@ def on_create(self):
 def update_institute(args):
     global list_recommend
     global listbox1
-    print('update ui institutelist recieved')
+    print('推荐课')
     listbox1.insert(END, "【以下是你目前未选择的“服从推荐”课程】点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_recommend.__len__()):
 
         # print 'institute '+str(i)+str(list_institute[i][0])
-        listbox1.insert(END, str(list_recommend[i]['courseName']))
+        data=str(list_recommend[i]['courseName'])+" "+str(list_recommend[i]['teacherName'])+" "+str(list_recommend[i]['teachingPlace'])
+        listbox1.insert(END, data)
 
 def update_humanity(args):
     global list_humanity
     global listbox2
-    # print 'update ui list_humanity recieved'
+    print ("人文课")
     listbox2.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_humanity.__len__()):
         # print 'institute '+str(i)+str(list_humanity[i][0])
-        listbox2.insert(END, str(list_humanity[i]['courseName']))
+        data=str(list_humanity[i]['courseName'])+" "+str(list_humanity[i]['teacherName'])+" "+str(list_humanity[i]['teachingPlace'])
+        listbox2.insert(END, data)
 
 
 def update_science(args):
     global list_science
     global listbox3
-    # print 'update ui update_science recieved'
+    print ("社会科学")
     listbox3.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_science.__len__()):
-        # print 'institute '+str(i)+str(list_science[i][0])
-        listbox3.insert(END,str(list_science[i]['courseName']))
+        data=str(list_science[i]['courseName'])+" "+str(list_science[i]['teacherName'])+" "+str(list_science[i]['teachingPlace'])
+        listbox3.insert(END,data)
 
 
 def update_economy(args):
     global list_economics
     global listbox4
-    # print 'update ui list_economics recieved'
+    print ("经济")
     listbox4.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_economics.__len__()):
-        # print 'list_economics '+str(i)+str(list_economics[i][0])
-        listbox4.insert(END, str(list_economics[i]['courseName']))
+        data=str(list_economics[i]['courseName'])+" "+str(list_economics[i]['teacherName'])+" "+str(list_economics[i]['teachingPlace'])
+        listbox4.insert(END, data)
 
 
 def update_seminar(args):
     global list_sports
     global listbox5
-    # print 'update ui list_seminar recieved'
+    print ("体育课")
     listbox5.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_sports.__len__()):
-        # print 'list_seminar '+str(i)+str(list_seminar[i][0])
-        listbox5.insert(END,str(list_sports[i]['courseName']))
+        data=str(list_sports[i]['courseName'])+" "+str(list_sports[i]['teacherName'])+" "+str(list_sports[i]['teachingPlace'])
+        listbox5.insert(END,data)
 
 
 def update_inter(args):
@@ -657,7 +648,6 @@ def item_selected(args):
     else:
         btn_catch_specific.config(state='normal')
         btn_stop_specific.config(state='disabled')
-
 
 def catch_specific():
     global flag_economics
@@ -781,6 +771,35 @@ if __name__ == "__main__":
     root.bind("<<EVENT_LOGIN_UPDATE>>", login_update)
     root.bind("<<EVENT_ON_CREATE>>", on_create)
 
+    frame0 = Frame(root)
+
+    frame = Frame(root)
+
+    frame2 = Frame(root)
+
+    frame3 = Frame(root)
+
+    tabs = ttk.Notebook(frame2)
+
+    page_institute = ttk.Frame(tabs)
+    listbox1 = Listbox(page_institute)
+
+
+    page_humanities = ttk.Frame(tabs)
+    listbox2 = Listbox(page_humanities)
+
+
+    page_science = ttk.Frame(tabs)
+    listbox3 = Listbox(page_science)
+
+
+    page_economics = ttk.Frame(tabs)
+    listbox4 = Listbox(page_economics)
+
+
+    page_seminar = ttk.Frame(tabs)
+    listbox5 = Listbox(page_seminar)
+
 
 
     #读完课程，更新拉取到的所有课程
@@ -789,7 +808,7 @@ if __name__ == "__main__":
     root.bind("<<UPDATE_SCIENCE_LIST>>", update_science)
     root.bind("<<UPDATE_ECONOMICS_LIST>>", update_economy)
     root.bind("<<UPDATE_SEMINAR_LIST>>", update_seminar)
-    root.bind("<<UPDATE_INTER_LIST>>", update_inter)
+    #root.bind("<<UPDATE_INTER_LIST>>", update_inter)
     root.bind("<<SELECT_SUCCESS>>", on_select_success)
 
 
@@ -797,13 +816,22 @@ if __name__ == "__main__":
 
     dlg = LoginDialog(root, '登录选课系统')
 
-    frame0 = Frame(root)
 
-    frame = Frame(root)
 
-    frame2 = Frame(root)
+    listbox1.bind('<<ListboxSelect>>', item_selected)
+    listbox1.pack(fill=BOTH)
 
-    frame3 = Frame(root)
+    listbox2.bind('<<ListboxSelect>>', item_selected)
+    listbox2.pack(fill=BOTH)
+
+    listbox3.bind('<<ListboxSelect>>', item_selected)
+    listbox3.pack(fill=BOTH)
+
+    listbox4.bind('<<ListboxSelect>>', item_selected)
+    listbox4.pack(fill=BOTH)
+
+    listbox5.bind('<<ListboxSelect>>', item_selected)
+    listbox5.pack(fill=BOTH)
 
     mainLabel = Label(frame0, text="已经用本工具选到0门课")
     mainLabel.config(font=('times', 20, 'bold'))
@@ -823,44 +851,21 @@ if __name__ == "__main__":
     btn_about.pack(side=RIGHT, padx=5)
     btn_table.pack(side=RIGHT, padx=5)
 
-    tabs = ttk.Notebook(frame2)
 
-    page_institute = ttk.Frame(tabs)
-    listbox1 = Listbox(page_institute)
-    listbox1.bind('<<ListboxSelect>>', item_selected)
-    listbox1.pack(fill=BOTH)
 
-    page_humanities = ttk.Frame(tabs)
-    listbox2 = Listbox(page_humanities)
-    listbox2.bind('<<ListboxSelect>>', item_selected)
-    listbox2.pack(fill=BOTH)
 
-    page_science = ttk.Frame(tabs)
-    listbox3 = Listbox(page_science)
-    listbox3.bind('<<ListboxSelect>>', item_selected)
-    listbox3.pack(fill=BOTH)
 
-    page_economics = ttk.Frame(tabs)
-    listbox4 = Listbox(page_economics)
-    listbox4.bind('<<ListboxSelect>>', item_selected)
-    listbox4.pack(fill=BOTH)
-
-    page_seminar = ttk.Frame(tabs)
-    listbox5 = Listbox(page_seminar)
-    listbox5.bind('<<ListboxSelect>>', item_selected)
-    listbox5.pack(fill=BOTH)
-
-    page_inter_institute = ttk.Frame(tabs)
-    listbox6 = Listbox(page_inter_institute)
-    listbox6.bind('<<ListboxSelect>>', item_selected)
-    listbox6.pack(fill=BOTH)
+    # page_inter_institute = ttk.Frame(tabs)
+    # listbox6 = Listbox(page_inter_institute)
+    # listbox6.bind('<<ListboxSelect>>', item_selected)
+    # listbox6.pack(fill=BOTH)
 
     tabs.add(page_institute, text='院系内可【服从推荐】课程')
     tabs.add(page_humanities, text='人文社科通选课程')
     tabs.add(page_science, text='自然科学通选课程')
     tabs.add(page_economics, text='经济管理通选课程')
-    tabs.add(page_seminar, text='seminar课程')
-    tabs.add(page_inter_institute, text='跨院系课程')
+    tabs.add(page_seminar, text='体育课程')
+    # tabs.add(page_inter_institute, text='跨院系课程')
     tabs.pack(side=BOTTOM, expand=1, fill=BOTH, padx=10, pady=10)
 
     group1 = LabelFrame(frame3, text="院系内课程池", padx=5, pady=5)
