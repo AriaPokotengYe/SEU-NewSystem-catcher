@@ -51,7 +51,7 @@ list_economics=[] #经管选修课
 list_sports = [] #体育选修课
 
 # 正在选择的课程的清单
-list_selecting = []
+list_recommend_selecting = []
 list_humanity_selecting = []
 list_science_selecting = []
 list_economics_selecting = []
@@ -61,9 +61,11 @@ list_sports_selecting= []
 selected_num = 0
 
 # 三类通选是否正在选择的flag，1为否
+flag_recommend = 1
 flag_humanity = 1
 flag_science = 1
 flag_economics = 1
+flag_sports = 1
 
 intensity = 0
 
@@ -128,7 +130,7 @@ class PreloadDialog(Toplevel):
         # print 'destroyed'
 
 class LoginDialog(Toplevel):
-    #初始化登录界面，暂时未进行任何修改,Tk可以正常启动引入
+    #初始化登录界面，正常运行
     def __init__(self, parent, title=None):
         Toplevel.__init__(self, parent)
 
@@ -190,8 +192,8 @@ class LoginDialog(Toplevel):
     # 正在登录，依次请求网络数据
     def init_data(self):
         # 网络请求
-        print ('init data~')
-        for i in range(1,7):# 几个获取数据的阶段，为了测试暂时修改
+        print ("正在初始化数据")
+        for i in range(1,7):# 获取数据的1-6个阶段
             global progress
             global progress_bar
             # 登录过程的某一阶段处理
@@ -200,7 +202,6 @@ class LoginDialog(Toplevel):
             except Exception as e:
                 i -= 1
                 continue
-                # 重试
                 # 登陆不成功
                 tkMessageBox.showwarning("登录失败","请重新启动本程序\n")
                 print('app destroy' + str(e))
@@ -208,19 +209,18 @@ class LoginDialog(Toplevel):
             # 阶段处理完成
             progress += 20
             root.event_generate("<<EVENT_LOGIN_UPDATE>>")
-        print('init data finished')
+        print("数据初始化完成")
 
     #此处完成登录、拉取课表等操作
     def doPost(self, step):
         global mainLabel
         global cookie
         global headerNum
-        global list_institute
+        global list_recommend
         global list_humanity
         global list_science
         global list_economics
-        global list_seminar
-        global list_interinstitute
+        global list_sports
         if step == 1:
             print("正在进行第一步：登录")
             global cookie
@@ -235,13 +235,12 @@ class LoginDialog(Toplevel):
             header = fake_headers[headerNum]
             header.setdefault('Referer', 'http://newxk.urp.seu.edu.cn/')
             url = "http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/student/check/login.do?"+"timestrap="+str(int(time.time()))+"&loginName="+str(username)+"&loginPwd="+password+"&verifyCode="+vercode+"&vtoken="+vtoken
-            print(url)
             req = urllib.request.Request(url, headers=header)
             #response = urllib.request.urlopen(req, timeout=12)
             cookie = http.cookiejar.CookieJar()
             opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cookie))
             urllib.request.install_opener(opener)
-            response=opener.open(req)
+            response = opener.open(req)
             content = response.read().decode('utf-8')
             jsonObject = json.loads(content)
             Logintoken = jsonObject['data']['token']
@@ -250,13 +249,13 @@ class LoginDialog(Toplevel):
             print(Msg)
             if (Msg!="登录成功"):
                 mainLabel.config(text="登录失败")
-
             #如果登录成功，获取选课批次代码
             url = "http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/elective/batch.do?timestrap="+str(int(time.time()));
             data=urllib.request.urlopen(url)
             content=data.read().decode("utf-8")
             electiveBatchCode = json.loads(content)['dataList'][0]['code']
             print(electiveBatchCode)
+
         if step == 2:
             print("正在进行第二步：拉取系统推荐课程")
             header2 = fake_headers[headerNum]
@@ -286,10 +285,9 @@ class LoginDialog(Toplevel):
             response2 = urllib.request.urlopen(req2, timeout=12)
             content2 = response2.read().decode('utf-8')
             print("专业课拉取完毕")
-            JsonParse(list_recommend,content2)
-
-            # print 'update ui humanitylist generated'
+            JsonParse(list_recommend ,content2)
             root.event_generate("<<UPDATE_INSTITUTE_LIST>>")
+
         if step == 3:
             # print 'do post 3'
             print("正在进行第三步：拉取人文选修课程")
@@ -323,8 +321,8 @@ class LoginDialog(Toplevel):
             content3= response3.read().decode('utf-8')
             print("人文课拉取完毕")
             GJsonParse(list_humanity, content3)
-            # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_HUMANOTY_LIST>>")
+
         if step == 4:
             print("正在进行第三步：拉取自然科学课程")
             header4 = fake_headers[headerNum]
@@ -348,7 +346,6 @@ class LoginDialog(Toplevel):
                 "pageNumber": "0",
                 "order": ""
             }
-
             postdata = urllib.parse.urlencode({
                 "querySetting": json.dumps(jsonData)
             }).encode('utf-8')
@@ -357,11 +354,10 @@ class LoginDialog(Toplevel):
             content4 = response4.read().decode('utf-8')
             print("自然科学与技术课程拉取完毕")
             GJsonParse(list_science, content4)
-            # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_SCIENCE_LIST>>")
+
         if step == 5:
             print("正在进行第五步：拉取经管课程")
-
             header5 = fake_headers[headerNum]
             header5.setdefault('Referer',
                                'http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/*default/grablessons.do?token=' + str(
@@ -383,7 +379,6 @@ class LoginDialog(Toplevel):
                 "pageNumber": "0",
                 "order": ""
             }
-
             postdata = urllib.parse.urlencode({
                 "querySetting": json.dumps(jsonData)
             }).encode('utf-8')
@@ -392,11 +387,11 @@ class LoginDialog(Toplevel):
             content5 = response5.read().decode('utf-8')
             print("经济管理类拉取完毕")
             GJsonParse(list_economics, content5)
-            # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_ECONOMICS_LIST>>")
+
         if step == 6:
             # print 'do post 6'
-            print("正在进行第三步：拉取体育课程")
+            print("正在进行第六步：拉取体育课程")
             header6 = fake_headers[headerNum]
             header6.setdefault('Referer',
                                'http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/*default/grablessons.do?token=' + str(
@@ -418,7 +413,6 @@ class LoginDialog(Toplevel):
                 "pageNumber": "0",
                 "order": ""
             }
-
             postdata = urllib.parse.urlencode({
                 "querySetting": json.dumps(jsonData)
             }).encode('utf-8')
@@ -427,10 +421,10 @@ class LoginDialog(Toplevel):
             content6 = response6.read().decode('utf-8')
             print("体育课拉取完毕")
             JsonParse(list_sports, content6)
-            # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_INTER_LIST>>")
 
-# 获取验证码，图片暂时无法在本地打开，但是GUI测试正常可用
+
+# 获取验证码图片，测试正常可用
 def get_verifycode():
     # 获取当前时间戳
     timestamp = time.time()
@@ -442,8 +436,10 @@ def get_verifycode():
     urllib.request.install_opener(opener)
     req = urllib.request.Request(url)
     file = opener.open(req)
+    #获取验证码vtoken
     vtoken = json.load(file)['data']['token']
     print(vtoken)
+    # 获取验证码
     img = urllib.request.urlopen(
         'http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/student/vcode/image.do?vtoken=' + vtoken, timeout=8)
     f = open('verifycode.jpg', 'wb')
@@ -454,16 +450,18 @@ def get_verifycode():
 #解析Json
 def JsonParse(datalist,StrJson):
     print("正在进行课表Json数据的解析")
+    #清空现有记录
+    datalist = []
     jsonObject = json.loads(StrJson)
     totalCount = jsonObject['totalCount']
     for i in range(0,int(totalCount)):
-        str_select=str(jsonObject['dataList'][i]['selected'])
-        if str_select=="False":
-            classData=dict(courseName=jsonObject['dataList'][i]['courseName'])
+        str_select = str(jsonObject['dataList'][i]['selected'])
+        if str_select == "False":
+            classData = dict(courseName=jsonObject['dataList'][i]['courseName'])
             for j in range(0, int(jsonObject['dataList'][i]['number'])):
-                classData['isFull']=str(jsonObject['dataList'][i]['tcList'][j]['isFull'])
+                classData['isFull'] =str(jsonObject['dataList'][i]['tcList'][j]['isFull'])
                 classData['isConflict'] = str(jsonObject['dataList'][i]['tcList'][j]['isConflict'])
-                classData['teachingClassID']=str(jsonObject['dataList'][i]['tcList'][j]['teachingClassID'])
+                classData['teachingClassID'] =str(jsonObject['dataList'][i]['tcList'][j]['teachingClassID'])
                 classData['isChoose'] = str(jsonObject['dataList'][i]['tcList'][j]['isChoose'])
                 classData['teacherName'] = str(jsonObject['dataList'][i]['tcList'][j]['teacherName'])
                 classData['teachingPlace'] = str(jsonObject['dataList'][i]['tcList'][j]['teachingPlace'])
@@ -474,6 +472,8 @@ def JsonParse(datalist,StrJson):
 #解析json，通选课的json数据不同
 def GJsonParse(datalist, StrJson):
     print("正在进行通选课Json数据的解析")
+    # 清空现有记录
+    datalist = []
     jsonObject = json.loads(StrJson)
     totalCount = jsonObject['totalCount']
     for i in range(0, int(totalCount)):
@@ -488,7 +488,6 @@ def GJsonParse(datalist, StrJson):
             datalist.append(classData)
     print(datalist)
     print("公选课json解析完毕")
-
 
 #判断进度条
 def login_update(self):
@@ -536,10 +535,9 @@ def on_create(self):
 def update_institute(args):
     global list_recommend
     global listbox1
-    print('推荐课')
-    listbox1.insert(END, "【以下是你目前未选择的“服从推荐”课程】点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
+    print("推荐课程正在更新列表")
+    listbox1.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_recommend.__len__()):
-
         # print 'institute '+str(i)+str(list_institute[i][0])
         data=str(list_recommend[i]['courseName'])+" "+str(list_recommend[i]['teacherName'])+" "+str(list_recommend[i]['teachingPlace'])
         listbox1.insert(END, data)
@@ -547,7 +545,7 @@ def update_institute(args):
 def update_humanity(args):
     global list_humanity
     global listbox2
-    print ("人文课")
+    print("人文课正在更新列表")
     listbox2.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_humanity.__len__()):
         # print 'institute '+str(i)+str(list_humanity[i][0])
@@ -557,7 +555,7 @@ def update_humanity(args):
 def update_science(args):
     global list_science
     global listbox3
-    print ("社会科学")
+    print ("社会科学课正在更新列表")
     listbox3.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_science.__len__()):
         data=str(list_science[i]['courseName'])+" "+str(list_science[i]['teacherName'])+" "+str(list_science[i]['teachingPlace'])
@@ -566,32 +564,22 @@ def update_science(args):
 def update_economy(args):
     global list_economics
     global listbox4
-    print ("经济")
+    print ("经管课正在更新列表")
     listbox4.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_economics.__len__()):
         data=str(list_economics[i]['courseName'])+" "+str(list_economics[i]['teacherName'])+" "+str(list_economics[i]['teachingPlace'])
         listbox4.insert(END, data)
 
-def update_seminar(args):
+def update_sports(args):
     global list_sports
     global listbox5
-    print ("体育课")
+    print ("体育课正在更新列表")
     listbox5.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
     for i in range(0, list_sports.__len__()):
         data=str(list_sports[i]['courseName'])+" "+str(list_sports[i]['teacherName'])+" "+str(list_sports[i]['teachingPlace'])
         listbox5.insert(END,data)
 
-def update_inter(args):
-    global list_interinstitute
-    global listbox6
-    # print 'update ui list_interinstitute recieved'
-    listbox6.insert(END, "点击选中课程后点右上【开始所选】按钮即可开始刷该门课程，请用鼠标滚轮来滑动列表，祝好运。")
-    for i in range(0, list_interinstitute.__len__()):
-        # print 'list_interinstitute '+str(i)+str(list_interinstitute[i][0])
-        listbox6.insert(END, str(list_interinstitute[i][0]) + '    ' + str(list_interinstitute[i][1]) + '    ' + str(
-            list_interinstitute[i][2]))
-
-#选课成功的提示
+#抢课成功
 def on_select_success(args):
     global selected_num
     global mainLabel
@@ -603,21 +591,21 @@ def on_select_success(args):
         mainLabel.config(text="已经用本工具选到" + str(count) + "门课")
     pass
 
-#关于条目
+#关于信息
 def about():
     dialog = Toplevel(root)
     dialog.geometry('280x190+360+300')
     dialog.title('关于本软件')
-    Label(dialog, text="东南大学新系统选课助手\n1.0测试版\n\n严禁一切商业用途\n关注本工具的最新动态，请移步本项目的github\n如希望反馈漏洞，请通过github联系").pack()
-    Button(dialog, text=' 移步github ', command=lambda: click_about("https://github.com/AriaPokotengYe/SEU-NewSystem-catcher")).pack(
-        pady=5)
+    Label(dialog, text="东南大学新系统选课助手\n1.0测试版\n\n严禁一切商业用途\n关注本工具的最新动态，请移步本项目的github").pack()
+    Button(dialog, text=' 移步过去资瓷一下 ', command=lambda: click_about("https://github.com/AriaPokotengYe/SEU-NewSystem-catcher")).pack(pady=5)
     Button(dialog, text='   已 阅   ', command=lambda: dialog.destroy()).pack(pady=5)
 
-#用于实现点击按键时打开github
+#点击关于
 def click_about(text):
     print("You clicked '%s'" % text)
     webbrowser.open_new(text)
 
+#根据课程是否已经加入选课列表，改变可选按键
 def item_selected(args):
     # 获取选中项在box的下标和当前box在容器中的编号
     w = args.widget
@@ -626,26 +614,53 @@ def item_selected(args):
     # 获取对应课程条目的选课id
     id_selected = 'false'
     if index_tab == 0:
-        id_selected = list_institute[index - 1][2]
+        id_selected = list_recommend[index - 1][2]
+        if id_selected in list_recommend_selecting:
+            btn_stop_specific.config(state='normal')
+            btn_catch_specific.config(state='disabled')
+        else:
+            btn_catch_specific.config(state='normal')
+            btn_stop_specific.config(state='disabled')
+
     if index_tab == 1:
         id_selected = list_humanity[index - 1][3]
+        if id_selected in list_recommend_selecting:
+            btn_stop_specific.config(state='normal')
+            btn_catch_specific.config(state='disabled')
+        else:
+            btn_catch_specific.config(state='normal')
+            btn_stop_specific.config(state='disabled')
+
     if index_tab == 2:
         id_selected = list_science[index - 1][3]
+        if id_selected in list_science_selecting:
+            btn_stop_specific.config(state='normal')
+            btn_catch_specific.config(state='disabled')
+        else:
+            btn_catch_specific.config(state='normal')
+            btn_stop_specific.config(state='disabled')
+
     if index_tab == 3:
         id_selected = list_economics[index - 1][3]
+        if id_selected in list_economics_selecting:
+            btn_stop_specific.config(state='normal')
+            btn_catch_specific.config(state='disabled')
+        else:
+            btn_catch_specific.config(state='normal')
+            btn_stop_specific.config(state='disabled')
+
     if index_tab == 4:
-        id_selected = list_seminar[index - 1][3]
-    if index_tab == 5:
-        id_selected = list_interinstitute[index - 1][3]
+        id_selected = list_sports[index - 1][3]
+        if id_selected in list_sports_selecting:
+            btn_stop_specific.config(state='normal')
+            btn_catch_specific.config(state='disabled')
+        else:
+            btn_catch_specific.config(state='normal')
+            btn_stop_specific.config(state='disabled')
     # print 'You selected  tab:%d  item:"%d"  id:"%s"  ' % (index_tab, index,id_selected)
     # 检查该门课是否在刷课池以确定按钮展示方式
-    if id_selected in list_selecting:
-        btn_stop_specific.config(state='normal')
-        btn_catch_specific.config(state='disabled')
-    else:
-        btn_catch_specific.config(state='normal')
-        btn_stop_specific.config(state='disabled')
 
+#抢特定课程（需要完善）
 def catch_specific():
     global flag_economics
     global flag_humanity
@@ -690,7 +705,7 @@ def catch_specific():
     # 开始选课
     # print str(list_selecting)
     #thread.start_new_thread(select_worker, (index_tab, id_selected, selected - 1))
-
+#停止特定选择（需要完善）
 def stop_specific():
     index_tab = tabs.index(tabs.select())
     # print 'selected page is '+str(index_tab)
@@ -724,20 +739,24 @@ def stop_specific():
     # 从正在选课的列表移除选课id
     # 该门课的值守线程发现选课id被移除就会结束
     list_selecting.remove(id_selected)
+#此外还差多线程、选课逻辑、发选课post需要实现
 
-
+#停止所有，直接清空所选列表
 def stop_all():
-    global list_selecting
+    global list_recommend_selecting
     global list_economics_selecting
     global list_science_selecting
     global list_humanity_selecting
+    global list_sprots_selecting
     # print 'stopping all '+str(list_selecting)
-    list_selecting = []
+    list_recommend_selecting = []
     list_economics_selecting = []
     list_science_selecting = []
     list_humanity_selecting = []
+    list_sprots_selecting = []
     # print 'stopped all'+str(list_selecting)
 
+#老系统查询选课结果界面，新系统可能没用
 def check_table():
     global username
     dialog = Toplevel(root)
@@ -752,14 +771,6 @@ def check_table():
 
 
 if __name__ == "__main__":
-    # preload.destroy()
-
-    # global listbox1
-    # global listbox2
-    # global listbox3
-    # global listbox4
-    # global listbox5
-
     root = Tk()
     root.title("东南大学选课助手")
     root.resizable(width=False, height=False)
@@ -804,8 +815,7 @@ if __name__ == "__main__":
     root.bind("<<UPDATE_HUMANOTY_LIST>>", update_humanity)
     root.bind("<<UPDATE_SCIENCE_LIST>>", update_science)
     root.bind("<<UPDATE_ECONOMICS_LIST>>", update_economy)
-    root.bind("<<UPDATE_SEMINAR_LIST>>", update_seminar)
-    #root.bind("<<UPDATE_INTER_LIST>>", update_inter)
+    root.bind("<<UPDATE_SPORTS_LIST>>", update_sports)
     root.bind("<<SELECT_SUCCESS>>", on_select_success)
 
 
@@ -849,43 +859,34 @@ if __name__ == "__main__":
     btn_table.pack(side=RIGHT, padx=5)
 
 
-
-
-
-    # page_inter_institute = ttk.Frame(tabs)
-    # listbox6 = Listbox(page_inter_institute)
-    # listbox6.bind('<<ListboxSelect>>', item_selected)
-    # listbox6.pack(fill=BOTH)
-
-    tabs.add(page_institute, text='院系内可【服从推荐】课程')
-    tabs.add(page_humanities, text='人文社科通选课程')
-    tabs.add(page_science, text='自然科学通选课程')
+    tabs.add(page_institute,text='系统推荐课程')
+    tabs.add(page_humanities,text='人文社科通选课程')
+    tabs.add(page_science,text='自然科学通选课程')
     tabs.add(page_economics, text='经济管理通选课程')
     tabs.add(page_seminar, text='体育课程')
-    # tabs.add(page_inter_institute, text='跨院系课程')
     tabs.pack(side=BOTTOM, expand=1, fill=BOTH, padx=10, pady=10)
 
-    group1 = LabelFrame(frame3, text="院系内课程池", padx=5, pady=5)
+    group1 = LabelFrame(frame3, text="系统推荐", padx=5, pady=5)
     group1.pack(side=LEFT, padx=10, pady=10)
     pool1 = Listbox(group1, bg='black', fg='green')
     pool1.pack()
 
-    group2 = LabelFrame(frame3, text="人文社科池", padx=5, pady=5)
+    group2 = LabelFrame(frame3, text="人文社科", padx=5, pady=5)
     group2.pack(side=LEFT, padx=10, pady=10)
     pool2 = Listbox(group2, bg='black', fg='green')
     pool2.pack()
 
-    group3 = LabelFrame(frame3, text="自然科学池", padx=5, pady=5)
+    group3 = LabelFrame(frame3, text="自然科学", padx=5, pady=5)
     group3.pack(side=LEFT, padx=10, pady=10)
     pool3 = Listbox(group3, bg='black', fg='green')
     pool3.pack()
 
-    group4 = LabelFrame(frame3, text="经济管理池", padx=5, pady=5)
+    group4 = LabelFrame(frame3, text="经济管理", padx=5, pady=5)
     group4.pack(side=LEFT, padx=10, pady=10)
     pool4 = Listbox(group4, bg='black', fg='green')
     pool4.pack()
 
-    group5 = LabelFrame(frame3, text="其它课程池", padx=5, pady=5)
+    group5 = LabelFrame(frame3, text="体育课程", padx=5, pady=5)
     group5.pack(side=LEFT, padx=10, pady=10)
     pool5 = Listbox(group5, bg='black', fg='green')
     pool5.pack()
