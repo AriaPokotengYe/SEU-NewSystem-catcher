@@ -128,7 +128,7 @@ class PreloadDialog(Toplevel):
         # print 'destroyed'
 
 class LoginDialog(Toplevel):
-    #初始化登录界面，暂时未进行任何修改,Tk暂时无法引入
+    #初始化登录界面，暂时未进行任何修改,Tk可以正常启动引入
     def __init__(self, parent, title=None):
         Toplevel.__init__(self, parent)
 
@@ -430,8 +430,6 @@ class LoginDialog(Toplevel):
             # print 'update ui list_science generated'
             root.event_generate("<<UPDATE_INTER_LIST>>")
 
-
-
 # 获取验证码，图片暂时无法在本地打开，但是GUI测试正常可用
 def get_verifycode():
     # 获取当前时间戳
@@ -556,7 +554,6 @@ def update_humanity(args):
         data=str(list_humanity[i]['courseName'])+" "+str(list_humanity[i]['teacherName'])+" "+str(list_humanity[i]['teachingPlace'])
         listbox2.insert(END, data)
 
-
 def update_science(args):
     global list_science
     global listbox3
@@ -565,7 +562,6 @@ def update_science(args):
     for i in range(0, list_science.__len__()):
         data=str(list_science[i]['courseName'])+" "+str(list_science[i]['teacherName'])+" "+str(list_science[i]['teachingPlace'])
         listbox3.insert(END,data)
-
 
 def update_economy(args):
     global list_economics
@@ -576,7 +572,6 @@ def update_economy(args):
         data=str(list_economics[i]['courseName'])+" "+str(list_economics[i]['teacherName'])+" "+str(list_economics[i]['teachingPlace'])
         listbox4.insert(END, data)
 
-
 def update_seminar(args):
     global list_sports
     global listbox5
@@ -585,7 +580,6 @@ def update_seminar(args):
     for i in range(0, list_sports.__len__()):
         data=str(list_sports[i]['courseName'])+" "+str(list_sports[i]['teacherName'])+" "+str(list_sports[i]['teachingPlace'])
         listbox5.insert(END,data)
-
 
 def update_inter(args):
     global list_interinstitute
@@ -597,6 +591,7 @@ def update_inter(args):
         listbox6.insert(END, str(list_interinstitute[i][0]) + '    ' + str(list_interinstitute[i][1]) + '    ' + str(
             list_interinstitute[i][2]))
 
+#选课成功的提示
 def on_select_success(args):
     global selected_num
     global mainLabel
@@ -608,15 +603,17 @@ def on_select_success(args):
         mainLabel.config(text="已经用本工具选到" + str(count) + "门课")
     pass
 
+#关于条目
 def about():
     dialog = Toplevel(root)
     dialog.geometry('280x190+360+300')
     dialog.title('关于本软件')
-    Label(dialog, text="东南大学选课助手\n1.0测试版\n\n严禁一切商业用途\n关注本工具的最新动态，请移步本项目的github\n2016-9-27").pack()
-    Button(dialog, text=' 移步过去资瓷一下 ', command=lambda: click_about("https://github.com/LeonidasCl/seu-jwc-catcher")).pack(
+    Label(dialog, text="东南大学新系统选课助手\n1.0测试版\n\n严禁一切商业用途\n关注本工具的最新动态，请移步本项目的github\n如希望反馈漏洞，请通过github联系").pack()
+    Button(dialog, text=' 移步github ', command=lambda: click_about("https://github.com/AriaPokotengYe/SEU-NewSystem-catcher")).pack(
         pady=5)
     Button(dialog, text='   已 阅   ', command=lambda: dialog.destroy()).pack(pady=5)
 
+#用于实现点击按键时打开github
 def click_about(text):
     print("You clicked '%s'" % text)
     webbrowser.open_new(text)
