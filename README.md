@@ -1,6 +1,6 @@
 # ****东南大学新系统选课助手1.0测试版****
 
-***本软件针对学校全新的选课系统，即链接为：http://newxk.urp.seu.edu.cn的选课系统。如果是老系统，请下载https://github.com/LeonidasCl/seu-jwc-catcher版本的选课助手。***
+***本软件针对学校全新的选课系统，即链接为：http://newxk.urp.seu.edu.cn 的选课系统。如果是老系统，请下载https://github.com/LeonidasCl/seu-jwc-catcher 版本的选课助手。***
 
 **本软件仅供辅助东南大学学生选课之用，严禁任何商业用途**、
 
