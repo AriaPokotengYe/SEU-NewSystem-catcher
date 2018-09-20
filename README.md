@@ -76,7 +76,8 @@ B.下载源代码，放到Python环境下运行（需要配置相应的环境：
 
 
 
-![](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/tree/master/img/1.png)
+![](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/raw/master/img/1.png)
+
 
 
 
@@ -100,7 +101,7 @@ B.下载源代码，放到Python环境下运行（需要配置相应的环境：
 
 
 
-![](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/tree/master/img/2.png)
+![](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/raw/master/img/2.png)
 
 5.使用完成提示如上，请在浏览器上**确认选课结果**
 
@@ -110,9 +111,9 @@ B.下载源代码，放到Python环境下运行（需要配置相应的环境：
 
 系统会自动根据选取列表，使按键处于禁用or可用状态
 
-![1537451684847](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/tree/master/img/3.png)
+![1537451684847](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/raw/master/img/3.png)
 
-![1537451745906](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/tree/master/img/4.png)
+![1537451745906](https://github.com/AriaPokotengYe/SEU-NewSystem-catcher/raw/master/img/4.png)
 
 
 
