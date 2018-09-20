@@ -1031,7 +1031,7 @@ def doVolunteer(teachingClassId,teachingClassType,typo):
 
     if result and typo == 1:
         pool2.insert(END, "人文课程刷课结束")
-        pool1.insert(END, "成功选择！")
+        pool2.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         humanity_thread_working = 1
         stop_thread(thread_humanity)
@@ -1039,21 +1039,21 @@ def doVolunteer(teachingClassId,teachingClassType,typo):
     if result and typo == 2:
         print("*****")
         pool3.insert(END, "自然科学课程刷课结束")
-        pool1.insert(END, "成功选择！")
+        pool3.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         science_thread_working = 1
         stop_thread(thread_science)
 
     if result and typo == 3:
         pool4.insert(END, "经管课程刷课结束")
-        pool1.insert(END, "成功选择！")
+        pool4.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         economics_thread_working = 1
         stop_thread(thread_economics)
 
     if result and typo == 4:
         pool5.insert(END, "体育课程刷课结束")
-        pool1.insert(END, "成功选择！")
+        pool5.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         sports_thread_working = 1
         stop_thread(thread_sports)
@@ -1110,15 +1110,15 @@ def stop_all():
 #老系统查询选课结果界面，新系统无法使用
 def check_table():
     global username
-    dialog = Toplevel(root)
-    dialog.geometry('240x100+360+300')
-    dialog.title('请输入学期')
-    Label(dialog, text="老系统的接口，新系统用不了\n例如，在下面的输入框中输入：16-17-2").pack()
-    v = StringVar()
-    Entry(dialog,textvariable=v).pack(pady=5)
-    Button(dialog, text=' 查看课表 ', command=lambda: webbrowser.open_new(r"http://xk.urp.seu.edu.cn/jw_s"
-                                                                      r"ervice/service/stuCurriculum.action?queryStudentId=" + str(
-        username) + "&queryAcademicYear=" + v.get())).pack(pady=5)
+    # dialog = Toplevel(root)
+    # dialog.geometry('240x100+360+300')
+    # dialog.title('请输入学期')
+    # Label(dialog, text="老系统的接口，新系统用不了\n例如，在下面的输入框中输入：16-17-2").pack()
+    # v = StringVar()
+    # Entry(dialog,textvariable=v).pack(pady=5)
+    # Button(dialog, text=' 查看课表 ', command=lambda: webbrowser.open_new(r"http://xk.urp.seu.edu.cn/jw_s"
+    #                                                                   r"ervice/service/stuCurriculum.action?queryStudentId=" + str(
+    #     username) + "&queryAcademicYear=" + v.get())).pack(pady=5)
 
 if __name__ == "__main__":
     #global dlg
