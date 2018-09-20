@@ -631,10 +631,7 @@ def on_select_success(args):
     global mainLabel
     selected_num += 1
     count = int(selected_num)
-    if flag_humanity != 1 or flag_economics != 1 or flag_science != 1:
-        mainLabel.config(text="一键模式抢课成功，请查看课表")
-    else:
-        mainLabel.config(text="已经用本工具选到" + str(count) + "门课")
+    mainLabel.config(text="已经用本工具选到" + str(count) + "门课")
     pass
 
 #关于信息
@@ -773,14 +770,9 @@ def select_worker(typo,current_list_selecting,current_list):
                         print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
 
         if typo == 3:
-            print("选课线程启动1")
             pool4.insert(END, "经管课程" + str(times) + "刷")
-            print("选课线程启动2")
             if pool4.size() > 6:
-                print("选课线程启动3")
                 pool4.delete(0, END)
-                print("选课线程启动4")
-            print("选课线程启动5")
             time.sleep(intensity)
             # 更新列表
             dlg.doPost(5)
@@ -909,7 +901,7 @@ def stop_specific():
     id_selected = 'false'
     if index_tab == 0:
         selected = int(listbox1.curselection()[0])
-        id_selected = list_recommend[selected - 1][2]
+        id_selected = list_recommend[selected - 1]['teachingClassID']
         list_recommend_selecting.remove(id_selected)
         if len(list_recommend_selecting) == 0:
             # 待选列表已空
@@ -917,7 +909,7 @@ def stop_specific():
             recommend_thread_working = 1
     if index_tab == 1:
         selected = int(listbox2.curselection()[0])
-        id_selected = list_humanity[selected - 1][3]
+        id_selected = list_humanity[selected - 1]['teachingClassID']
         list_humanity_selecting.remove(id_selected)
         if len(list_humanity_selecting) == 0:
             # 待选列表已空
@@ -925,7 +917,7 @@ def stop_specific():
             humanity_thread_working = 1
     if index_tab == 2:
         selected = int(listbox3.curselection()[0])
-        id_selected = list_science[selected - 1][3]
+        id_selected = list_science[selected - 1]['teachingClassID']
         list_science_selecting.remove(id_selected)
         if len(list_science_selecting) == 0:
             # 待选列表已空
@@ -933,7 +925,7 @@ def stop_specific():
             science_thread_working = 1
     if index_tab == 3:
         selected = int(listbox4.curselection()[0])
-        id_selected = list_economics[selected - 1][3]
+        id_selected = list_economics[selected - 1]['teachingClassID']
         list_economics_selecting.remove(id_selected)
         if len(list_economics_selecting) == 0:
             # 待选列表已空
@@ -941,7 +933,7 @@ def stop_specific():
             economics_thread_working = 1
     if index_tab == 4:
         selected = int(listbox5.curselection()[0])
-        id_selected = list_sports[selected - 1][3]
+        id_selected = list_sports[selected - 1]['teachingClassID']
         list_sports_selecting.remove(id_selected)
         if len(list_sports_selecting) == 0:
             # 待选列表已空
@@ -988,6 +980,12 @@ def doVolunteer(teachingClassId,teachingClassType,typo):
     global thread_science
     global thread_economics
     global thread_sports
+    global pool1
+    global pool2
+    global pool3
+    global pool4
+    global pool5
+
 
     print("正在发送选课请求")
     header = fake_headers[headerNum]
@@ -1015,30 +1013,51 @@ def doVolunteer(teachingClassId,teachingClassType,typo):
     response = urllib.request.urlopen(req, timeout=12)
     content = response.read().decode('utf-8')
     print("选课完成，选课返回结果:"+content)
+    jsonObject = json.loads(content)
+    msg = jsonObject['msg']
+    print(msg)
     #根据实际情况更新选课结果
-    result = True
+    result = False
+    if msg == '添加选课志愿成功':
+        result = True
     #此次还要根据返回结果判断一下,选上就要把所有的线程都停了(如果是人文、自然、经管、体育则需要停止线程。如果推荐课程有多个在刷取，则不需要停止课程）
     # typo是五类课程类型:0推荐课程，1人文，2自然科学，3经管，4体育
     if result and typo == 0:
+        pool1.insert(END, "推荐课程刷课结束")
+        pool1.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         recommend_thread_working = 1
         stop_thread(thread_recommend)
+
     if result and typo == 1:
+        pool2.insert(END, "人文课程刷课结束")
+        pool1.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         humanity_thread_working = 1
         stop_thread(thread_humanity)
+
     if result and typo == 2:
+        print("*****")
+        pool3.insert(END, "自然科学课程刷课结束")
+        pool1.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         science_thread_working = 1
         stop_thread(thread_science)
+
     if result and typo == 3:
+        pool4.insert(END, "经管课程刷课结束")
+        pool1.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         economics_thread_working = 1
         stop_thread(thread_economics)
+
     if result and typo == 4:
+        pool5.insert(END, "体育课程刷课结束")
+        pool1.insert(END, "成功选择！")
         root.event_generate("<<SELECT_SUCCESS>>")
         sports_thread_working = 1
         stop_thread(thread_sports)
+
 
 #【停止所有】，直接清空所选列表
 def stop_all():
@@ -1093,8 +1112,8 @@ def check_table():
     global username
     dialog = Toplevel(root)
     dialog.geometry('240x100+360+300')
-    dialog.title('请输入学期（这个是老系统的接口，新系统貌似没有特别合适的接口，暂且保留吧）')
-    Label(dialog, text="例如，在下面的输入框中输入：16-17-2").pack()
+    dialog.title('请输入学期')
+    Label(dialog, text="老系统的接口，新系统用不了\n例如，在下面的输入框中输入：16-17-2").pack()
     v = StringVar()
     Entry(dialog,textvariable=v).pack(pady=5)
     Button(dialog, text=' 查看课表 ', command=lambda: webbrowser.open_new(r"http://xk.urp.seu.edu.cn/jw_s"
