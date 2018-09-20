@@ -736,15 +736,42 @@ def select_worker(typo,current_list_selecting,current_list):
             pool1.insert(END, '推荐课程' + str(times) + '刷')
             if pool1.size() > 6:
                 pool1.delete(0, END)
+            time.sleep(intensity)
+            # 更新列表
+            dlg.doPost(2)
+            # 注意检查此处的数据是否正确，包括isFull、isConflict的具体数据
+            for i in range(0, current_list.__len__()):
+                for j in range(0, current_list_selecting.__len__()):
+                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull'] == '0' and current_list[i]['isConflict'] == '0':
+                        doVolunteer(current_list[i]['teachingClassID'], 'TJKC', typo)
+                        print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
 
         if typo == 1:
             pool2.insert(END, '人文课程'+ str(times) + '刷')
             if pool2.size() > 6:
                 pool2.delete(0, END)
+            time.sleep(intensity)
+            # 更新列表
+            dlg.doPost(3)
+            for i in range(0, current_list.__len__()):
+                for j in range(0, current_list_selecting.__len__()):
+                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull'] == '0' and current_list[i]['isConflict'] == '0':
+                        doVolunteer(current_list[i]['teachingClassID'], 'XGXK', typo)
+                        print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
+
         if typo == 2:
             pool3.insert(END, '自然课学课程'+str(times) + '刷')
             if pool3.size() > 6:
                 pool3.delete(0, END)
+            time.sleep(intensity)
+            # 更新列表
+            dlg.doPost(4)
+            for i in range(0, current_list.__len__()):
+                for j in range(0, current_list_selecting.__len__()):
+                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull'] == '0' and current_list[i]['isConflict'] == '0':
+                        doVolunteer(current_list[i]['teachingClassID'], 'XGXK', typo)
+                        print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
+
         if typo == 3:
             print("选课线程启动1")
             pool4.insert(END, "经管课程" + str(times) + "刷")
@@ -753,65 +780,28 @@ def select_worker(typo,current_list_selecting,current_list):
                 print("选课线程启动3")
                 pool4.delete(0, END)
                 print("选课线程启动4")
-        if typo == 4:
-            pool5.insert(END, '体育课程' + str(times) + '刷')
-            if pool5.size() > 6:
-                pool5.delete(0, END)
-
-        if typo == 0:
-            time.sleep(intensity)
-            #更新列表
-            dlg.doPost(2)
-            #注意检查此处的数据是否正确，包括isFull、isConflict的具体数据
-            for i in range(0, current_list.__len__()):
-                for j in range(0,current_list_selecting.__len__()):
-                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull']=='0' and current_list[i]['isConflict']=='0':
-                        doVolunteer(current_list[i]['teachingClassID'],'TJKC',typo)
-                        print(current_list[i]['courseName']+"未满且不冲突，正在发送选课请求")
-
-
-        if typo == 1:
-            time.sleep(intensity)
-            # 更新列表
-            dlg.doPost(3)
-            for i in range(0, current_list.__len__()):
-                for j in range(0, current_list_selecting.__len__()):
-                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull']=='0' and current_list[i]['isConflict']=='0':
-                        doVolunteer(current_list[i]['teachingClassID'], 'XGXK', typo)
-                        print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
-
-
-
-        if typo == 2:
-            time.sleep(intensity)
-            # 更新列表
-            dlg.doPost(4)
-            for i in range(0, current_list.__len__()):
-                for j in range(0, current_list_selecting.__len__()):
-                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull']=='0' and current_list[i]['isConflict']=='0':
-                        doVolunteer(current_list[i]['teachingClassID'], 'XGXK', typo)
-                        print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
-
-        if typo == 3:
+            print("选课线程启动5")
             time.sleep(intensity)
             # 更新列表
             dlg.doPost(5)
             for i in range(0, current_list.__len__()):
                 for j in range(0, current_list_selecting.__len__()):
-                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull']=='0' and current_list[i]['isConflict']=='0':
+                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull'] == '0' and current_list[i]['isConflict'] == '0':
                         doVolunteer(current_list[i]['teachingClassID'], 'XGXK', typo)
                         print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
 
         if typo == 4:
+            pool5.insert(END, '体育课程' + str(times) + '刷')
+            if pool5.size() > 6:
+                pool5.delete(0, END)
             time.sleep(intensity)
             # 更新列表
             dlg.doPost(6)
             for i in range(0, current_list.__len__()):
                 for j in range(0, current_list_selecting.__len__()):
-                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull']=='0' and current_list[i]['isConflict']=='0':
+                    if current_list[i]['teachingClassID'] in current_list_selecting and current_list[i]['isFull'] == '0' and current_list[i]['isConflict'] == '0':
                         doVolunteer(current_list[i]['teachingClassID'], 'TYKC', typo)
                         print(current_list[i]['courseName'] + "未满且不冲突，正在发送选课请求")
-
         times += 1
 
 #抢特定课程,即将选择的课程加入正在选择列表【开始所选】（需要完善，需要测试一下是否正确地将信息加入了待选列表;要根据情况启动线程更新线程工作状态）
@@ -852,7 +842,7 @@ def catch_specific():
             recommend_thread_working = 0
             thread_recommend = threading.Thread(target=select_worker, args=(0,list_recommend_selecting,list_recommend))
             thread_recommend.start()
-            thread_recommend.join()
+            #thread_recommend.join()
 
     if index_tab == 1:
         flag_humanity = 0
@@ -864,7 +854,7 @@ def catch_specific():
             humanity_thread_working = 0
             thread_humanity = threading.Thread(target=select_worker, args=(1,list_humanity_selecting,list_humanity))
             thread_humanity.start()
-            thread_humanity.join()
+            #thread_humanity.join()
 
     if index_tab == 2:
         flag_science = 0
@@ -876,7 +866,7 @@ def catch_specific():
             science_thread_working = 0
             thread_science = threading.Thread(target=select_worker, args=(2, list_science_selecting, list_science))
             thread_science.start()
-            thread_science.join()
+            #thread_science.join()
 
     if index_tab == 3:
         flag_economics = 0
@@ -888,7 +878,7 @@ def catch_specific():
             economics_thread_working = 0
             thread_economics = threading.Thread(target=select_worker, args=(3, list_economics_selecting, list_economics))
             thread_economics.start()
-            thread_economics.join()
+            #thread_economics.join()
 
     if index_tab == 4:
         selected = int(listbox5.curselection()[0])
@@ -899,7 +889,7 @@ def catch_specific():
             sports_thread_working = 0
             thread_sports = threading.Thread(target=select_worker, args=(4, list_sports_selecting, list_sports))
             thread_sports.start()
-            thread_sports.join()
+            #thread_sports.join()
 
     # 将按钮状态更新
     btn_stop_specific.config(state='normal')
@@ -1022,13 +1012,17 @@ def doVolunteer(teachingClassId,teachingClassType,typo):
         "addParam": json.dumps(jsonData)
     }).encode('utf-8')
     req = urllib.request.Request(url, postdata, headers=header)
-    #response = urllib.request.urlopen(req, timeout=12)
-    #content = response.read().decode('utf-8')
-    #print("选课完成，选课返回结果:"+content)
+    response = urllib.request.urlopen(req, timeout=12)
+    content = response.read().decode('utf-8')
+    print("选课完成，选课返回结果:"+content)
     #根据实际情况更新选课结果
-    result = False
+    result = True
     #此次还要根据返回结果判断一下,选上就要把所有的线程都停了(如果是人文、自然、经管、体育则需要停止线程。如果推荐课程有多个在刷取，则不需要停止课程）
     # typo是五类课程类型:0推荐课程，1人文，2自然科学，3经管，4体育
+    if result and typo == 0:
+        root.event_generate("<<SELECT_SUCCESS>>")
+        recommend_thread_working = 1
+        stop_thread(thread_recommend)
     if result and typo == 1:
         root.event_generate("<<SELECT_SUCCESS>>")
         humanity_thread_working = 1
