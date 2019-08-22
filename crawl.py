@@ -35,6 +35,7 @@ timestamp=None
 vtoken=None
 Logintoken=None
 electiveBatchCode=None
+nBatch=None
 dlg = None
 
 listbox1=None
@@ -168,13 +169,16 @@ class LoginDialog(Toplevel):
 
         Label(self, text="用户名").grid(sticky=E, padx=5, pady=10)
         Label(self, text="密码").grid(sticky=E)
+        Label(self, text="批次(0到n的整数)").grid(sticky=E, pady=10)
         Label(self, text="验证码").grid(sticky=E, pady=10)
         self.edit_username = Entry(self)
         self.edit_password = Entry(self)
+        self.edit_nBatch = Entry(self)
         self.edit_vercode = Entry(self)
         self.edit_username.grid(row=0, column=1, columnspan='2')
         self.edit_password.grid(row=1, column=1, columnspan='2')
-        self.edit_vercode.grid(row=2, column=1, columnspan='2')
+        self.edit_nBatch.grid(row=2, column=1, columnspan='2')
+        self.edit_vercode.grid(row=3, column=1, columnspan='2')
         # 读取验证码图片
         filename = 'verifycode.jpg'
         self.canvas = Canvas(self)
@@ -183,15 +187,16 @@ class LoginDialog(Toplevel):
         img_bg = ImageTk.PhotoImage(image)
         self.label = Label(self, image=img_bg)
         self.label.image = img_bg
-        self.label.grid(row=3, column=1, columnspan='2')
+        self.label.grid(row=4, column=1, columnspan='2')
 
         # 点击提交则验证登录并销毁登录界面
         self.btn_submit = Button(self, text='   提交   ', command=lambda: self.destroy())
-        self.btn_submit.grid(row=3, column=0, padx=10, pady=10)
+        self.btn_submit.grid(row=4, column=0, padx=10, pady=5)
 
         self.grab_set()
 
-        self.geometry('230x180+500+200')
+        self.geometry('250x220+500+200')
+
         self.resizable(width=False, height=False)
         self.wait_window(self)
 
@@ -206,9 +211,11 @@ class LoginDialog(Toplevel):
         global username
         global password
         global vercode
+        global nBatch
         username = self.edit_username.get()
         password = self.edit_password.get()
         vercode = self.edit_vercode.get()
+        nBatch = self.edit_nBatch.get()
         root.event_generate("<<EVENT_LOGIN>>")
         self.init_data()
         pass
@@ -232,7 +239,9 @@ class LoginDialog(Toplevel):
                 root.destroy()
             # 阶段处理完成
             progress += 20
+            print(progress)
             root.event_generate("<<EVENT_LOGIN_UPDATE>>")
+        root.event_generate("<<EVENT_ON_CREATE>>")
         print("数据初始化完成")
 
 
@@ -260,6 +269,7 @@ class LoginDialog(Toplevel):
             global headerNum
             global Logintoken
             global electiveBatchCode
+            global nBatch
             headerNum = random.randint(0, 3)
             # print 'header is ' + str(headerNum)
             header = fake_headers[headerNum]
@@ -283,8 +293,8 @@ class LoginDialog(Toplevel):
             url = "http://newxk.urp.seu.edu.cn/xsxkapp/sys/xsxkapp/elective/batch.do?timestrap="+str(int(time.time()));
             data=urllib.request.urlopen(url)
             content=data.read().decode("utf-8")
-            electiveBatchCode = json.loads(content)['dataList'][0]['code']
-            print(electiveBatchCode)
+            electiveBatchCode = json.loads(content)['dataList'][int(nBatch)]['code']
+            print("批次码:"+ electiveBatchCode)
 
         if step == 2:
             print("正在进行第二步：拉取系统推荐课程")
@@ -552,7 +562,9 @@ def login_update(self):
     if 60 <= progress <= 79:
         progressLabel.config(text='正在拉取体育课...')
     if progress > 90:
-        root.event_generate("<<EVENT_ON_CREATE>>")
+        progressLabel.config(text='马上就拉取完啦...')
+        # root.event_generate("<<EVENT_ON_CREATE>>")
+
 
 # 弹出加载对话框
 def login_start(self):
@@ -711,6 +723,11 @@ def item_selected(args):
         else:
             btn_catch_specific.config(state='normal')
             btn_stop_specific.config(state='disabled')
+
+    if index - 1<0:
+        btn_stop_specific.config(state='disabled')
+        btn_catch_specific.config(state='disabled')
+
     # 检查该门课是否在刷课池以确定按钮展示方式
 
 #五类课程选择的通用多线程函数(调试的时候要小心此处传入的参数是形参还是实参,还要判断内部的参数是否对的上)
@@ -1191,7 +1208,7 @@ if __name__ == "__main__":
     listbox5.bind('<<ListboxSelect>>', item_selected)
     listbox5.pack(fill=BOTH)
 
-    mainLabel = Label(frame0, text="已经用本工具选到0门课")
+    mainLabel = Label(frame0, text="如果本页面空白，请确认批次码正确性，并尝试重新登陆")
     mainLabel.config(font=('times', 20, 'bold'))
     mainLabel.pack(side=LEFT, padx=5)
 
