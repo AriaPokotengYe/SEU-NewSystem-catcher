@@ -472,7 +472,7 @@ class LoginDialog(Toplevel):
             print("体育课拉取完毕")
             JsonParse(list_sports, content6)
             if dispaly_flag_sports == 1:
-                root.event_generate("<<UPDATE_INTER_LIST>>")
+                root.event_generate("<<UPDATE_SPORTS_LIST>>")
                 dispaly_flag_sports = 0
 
 # 获取验证码图片，测试正常可用
@@ -510,8 +510,8 @@ def JsonParse(datalist,StrJson):
     for i in range(0,int(totalCount)):
         str_select = str(jsonObject['dataList'][i]['selected'])
         if str_select == "False":
-            classData = dict(courseName=jsonObject['dataList'][i]['courseName'])
             for j in range(0, int(jsonObject['dataList'][i]['number'])):
+                classData = dict(courseName=jsonObject['dataList'][i]['courseName'])
                 classData['isFull'] =str(jsonObject['dataList'][i]['tcList'][j]['isFull'])
                 classData['isConflict'] = str(jsonObject['dataList'][i]['tcList'][j]['isConflict'])
                 classData['teachingClassID'] =str(jsonObject['dataList'][i]['tcList'][j]['teachingClassID'])
@@ -531,8 +531,8 @@ def GJsonParse(datalist, StrJson):
     jsonObject = json.loads(StrJson)
     totalCount = jsonObject['totalCount']
     for i in range(0, int(totalCount)):
-        classData={}
         if((jsonObject['dataList'][i]['isChoose']) is None):
+            classData={}
             classData['courseName'] = jsonObject['dataList'][i]['courseName']
             classData['isFull'] = jsonObject['dataList'][i]['isFull']
             classData['isConflict'] = jsonObject['dataList'][i]['isConflict']
